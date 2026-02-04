@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎙️ Professional Podcast Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🎙️ Professional Podcast Generator</h1>
+            <p class="subtitle">Create natural, multi-speaker podcasts with AI-powered Edge TTS</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('generate')">Generate Podcast</button>
+            <button class="tab-btn" onclick="switchTab('custom')">Custom Script</button>
+            <button class="tab-btn" onclick="switchTab('voices')">Browse Voices</button>
+        </div>
+
+        <!-- Tab Content: Generate Podcast -->
+        <div id="generate-tab" class="tab-content active">
+            <div class="card">
+                <h2>Generate from Topic</h2>
+                
+                <div class="form-group">
+                    <label for="topic">Podcast Topic</label>
+                    <input type="text" id="topic" placeholder="e.g., Artificial Intelligence in Healthcare" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="language">🌍 Language</label>
+                        <select id="language" onchange="filterVoicesByLanguage()">
+                            <option value="">All Languages</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (minutes)</label>
+                        <input type="number" id="duration" value="5" min="1" max="30" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tone">Tone</label>
+                        <select id="tone">
+                            <option value="professional">Professional</option>
+                            <option value="casual">Casual</option>
+                            <option value="educational">Educational</option>
+                            <option value="entertaining">Entertaining</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="speakers">Speakers</label>
+                        <select id="speakers">
+                            <option value="2">2 (Host & Guest)</option>
+                            <option value="1">1 (Solo)</option>
+                            <option value="3">3 (Panel)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="keyPoints">Key Points (comma-separated)</label>
+                    <textarea id="keyPoints" rows="3" placeholder="Main idea 1, Main idea 2, Main idea 3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hostVoice">🎤 Host Voice</label>
+                        <select id="hostVoice">
+                            <option value="">Loading voices...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="guestVoice">🎙️ Guest Voice</label>
+                        <select id="guestVoice">
+                            <option value="">Loading voices...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="generatePodcast()">
+                    🎙️ Generate Podcast
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Custom Script -->
+        <div id="custom-tab" class="tab-content">
+            <div class="card">
+                <h2>Create from Custom Script</h2>
+                
+                <div class="form-group">
+                    <label for="customScript">Podcast Script</label>
+                    <p class="help-text">Format: <code>[SPEAKER|emotion] text</code></p>
+                    <textarea id="customScript" rows="12" placeholder="[HOST|enthusiastic] Welcome to our podcast!&#10;[GUEST|calm] Thanks for having me.&#10;[HOST|questioning] What brings you here today?"></textarea>
+                </div>
+
+                <div class="button-row">
+                    <button class="btn btn-secondary" onclick="validateScript()">
+                        ✓ Validate Script
+                    </button>
+                    <button class="btn btn-secondary" onclick="previewScript()">
+                        👁️ Preview (First 30s)
+                    </button>
+                    <button class="btn btn-primary" onclick="generateFromScript()">
+                        🎙️ Generate Full Podcast
+                    </button>
+                </div>
+
+                <div id="scriptStats" class="stats-box" style="display:none;"></div>
+            </div>
+
+            <!-- Available Emotions Reference -->
+            <div class="card">
+                <h3>Available Emotions</h3>
+                <div id="emotionsList" class="emotions-grid"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Browse Voices -->
+        <div id="voices-tab" class="tab-content">
+            <div class="card">
+                <h2>Browse & Preview Voices</h2>
+                <p class="help-text">Click on any voice to hear a demo</p>
+
+                <div class="form-group">
+                    <label for="localeFilter">Filter by Language</label>
+                    <select id="localeFilter" onchange="filterVoices()">
+                        <option value="">All Languages</option>
+                    </select>
+                </div>
+
+                <div id="voicesList" class="voices-grid">
+                    <div class="loading">Loading voices...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status/Results Section -->
+        <div id="statusSection" class="card" style="display:none;">
+            <h3 id="statusTitle">Status</h3>
+            <div id="statusMessage"></div>
+            
+            <div id="loadingBar" class="loading-bar" style="display:none;">
+                <div class="loading-progress"></div>
+            </div>
+            
+            <div id="resultSection" style="display:none;">
+                <audio id="resultAudio" controls></audio>
+                <div class="button-row">
+                    <button class="btn btn-secondary" onclick="downloadAudio()">
+                        ⬇️ Download MP3
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearResult()">
+                        ✕ Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Powered by Microsoft Edge TTS • Built with ❤️ for podcasters</p>
+            <p class="help-text">
+                <a href="https://github.com" target="_blank">Documentation</a> •
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
